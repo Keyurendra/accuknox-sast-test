@@ -10,6 +10,18 @@ const requestHandler = (req, res) => {
   // Intentional code injection vulnerability
   eval(userInput);
 
+  // Intentional command injection vulnerability
+  const { exec } = require('child_process');
+  exec("ping -c 1 " + userInput);
+
+  // Intentional weak cryptographic algorithm
+  const crypto = require('crypto');
+  const hash = crypto.createHash('md5').update(userInput).digest('hex');
+
+  // Intentional insecure HTTP request
+  const httpRequest = require('http');
+  httpRequest.get("http://example.com/api?token=SuperSecretToken123");
+
   res.end('Hello from AccuKnox demo container!');
 };
 
