@@ -1,0 +1,61 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- main
+
+pool:
+  name: New
+
+steps:
+
+- script: |
+    mkdir -p $(Build.SourcesDirectory)/results
+    chmod -R 777 $(Build.SourcesDirectory)/results
+  displayName: "Prepare results directory"
+  
+- task: accuknox-checkmarx-extension@1
+  inputs:
+    checkmarxBaseUri: $(checkmarxBaseUri)
+    checkmarxBaseAuthUri: $(checkmarxBaseAuthUri)
+    checkmarxTenant: $(checkmarxTenant)
+    checkmarxApiKey: $(checkmarxApiKey)
+    checkmarxProjectName: $(checkmarxProjectName)
+    accuknoxEndpoint: $(accuknoxEndpoint)
+    accuknoxToken: $(accuknoxToken)
+    accuknoxLabel: $(accuknoxLabel)
+
+- task: accuknox-checkmarx-extension@1
+  displayName: "Run Checkmarx DAST Scan"
+  inputs:
+    checkmarxBaseUri: $(checkmarxBaseUri)
+    checkmarxBaseAuthUri: $(checkmarxBaseAuthUri)
+    checkmarxTenant: $(checkmarxTenant)
+    checkmarxApiKey: $(checkmarxApiKey)
+    checkmarxProjectName: $(checkmarxProjectName)
+    checkmarxScanTypes: "dast"
+    dastScanUrl: "http://testphp.vulnweb.com"
+    dastEnvironmentId: "051cb3db-df12-4245-90fd-9ca1a441db2e"
+    dastFailOn: "high"
+    dastVerbose: true
+    accuknoxEndpoint: $(accuknoxEndpoint)
+    accuknoxToken: $(accuknoxToken)
+    accuknoxLabel: $(accuknoxLabel)
+
+- task: accuknox-checkmarx-extension@1
+  displayName: "Run Container Security Scan with SCA"
+  inputs:
+    checkmarxBaseUri: $(checkmarxBaseUri)
+    checkmarxBaseAuthUri: $(checkmarxBaseAuthUri)
+    checkmarxTenant: $(checkmarxTenant)
+    checkmarxApiKey: $(checkmarxApiKey)
+    checkmarxProjectName: $(checkmarxProjectName)
+    checkmarxScanTypes: "containers"
+    # Container-specific configuration
+    containerImages: "citizenstig/dvwa:latest"
+    containerExcludeNonFinalStages: true
+    accuknoxEndpoint: $(accuknoxEndpoint)
+    accuknoxToken: $(accuknoxToken)
+    accuknoxLabel: $(accuknoxLabel)

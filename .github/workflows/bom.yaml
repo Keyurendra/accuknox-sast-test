@@ -1,0 +1,53 @@
+name: Test SBOM image tag
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: "Tag to build/scan (verify it survives into the BOM name)"
+        required: true
+        default: "v1.0.0"
+
+jobs:
+  sbom-image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build image
+        id: build
+        run: |
+          IMAGE="test-app:${{ github.event.inputs.image_tag }}"
+          docker build -t "$IMAGE" -f Dockerfile .
+          echo "image=$IMAGE" >> "$GITHUB_OUTPUT"
+          echo "Built: $IMAGE"
+
+      - name: Generate SBOM
+        id: sbom
+        uses: Vickydew1/xbom-action@asset   # <-- branch with the tag fix
+        with:
+          bom-type:           sbom
+          image:              ${{ steps.build.outputs.image }}
+          token:              ${{ secrets.ACCUKNOX_TOKEN }}
+          endpoint:           ${{ secrets.ACCUKNOX_ENDPOINT }}
+          label:              ${{ secrets.ACCUKNOX_LABEL }}
+          project-name:       test
+          project-classifier: container
+
+      - name: Verify tag is in the BOM name
+        run: |
+          BOM="${{ steps.sbom.outputs.bom-file }}"
+          echo "BOM file: $BOM"
+          NAME=$(jq -r '.metadata.component.name' "$BOM")
+          VERSION=$(jq -r '.metadata.component.version' "$BOM")
+          echo "component.name    = $NAME"
+          echo "component.version = $VERSION"
+
+          EXPECTED="${{ steps.build.outputs.image }}"
+          if [ "$NAME" = "$EXPECTED" ]; then
+            echo "::notice::PASS - name carries the tag ($NAME)"
+          else
+            echo "::error::FAIL - expected '$EXPECTED' but got '$NAME'"
+            exit 1
+          fi
