@@ -1,12 +1,42 @@
-const http = require('http');
-const PORT = 8080;
+const express = require('express');
+const { exec } = require('child_process');
 
-const requestHandler = (req, res) => {
-  res.end('Hello from AccuKnox demo container!');
-};
+const app = express();
 
+// Hardcoded secret
+const API_KEY = "super-secret-api-key-12345";
 
-const server = http.createServer(requestHandler);
-server.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+app.get('/', (req, res) => {
+    res.send('Hello! This is a sample application for CI/CD testing.');
+});
+
+// Command Injection
+app.get('/execute', (req, res) => {
+    const command = req.query.command;
+
+    exec(command, (error, stdout) => {
+        res.send(stdout);
+    });
+});
+
+// Reflected XSS
+app.get('/hello', (req, res) => {
+    const name = req.query.name;
+
+    res.send(`<h1>Hello ${name}</h1>`);
+});
+
+// Path Traversal
+app.get('/file', (req, res) => {
+    const fs = require('fs');
+    const file = req.query.file;
+
+    const content = fs.readFileSync(file, 'utf8');
+    res.send(content);
+});
+
+const port = process.env.PORT || 3000;
+
+app.listen(port, () => {
+    console.log(`App running on port ${port}`);
 });
