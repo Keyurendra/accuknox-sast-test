@@ -17,3 +17,6 @@ AWS_SECRET_ACCESS_KEY = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYzEXAMPLEKEY"
 API_KEY = "f8b3c7a9d2e1f4b6c8a0e3d5f7b9c2a4e6d8f0b2c4a6e8d0f2b4c6a8e0d2f4b6"
 
 print("This file contains fake hardcoded secrets for testing only.")
+
+# Temporary secret for Jenkins/TruffleHog testing
+GITHUB_TOKEN = "ghp_123456789012345678901234567890123456"
