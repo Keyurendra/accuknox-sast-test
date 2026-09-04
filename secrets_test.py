@@ -6,7 +6,6 @@ AWS_ACCESS_KEY_ID = "AKIAQ7XVQH3MFJYV8KZN"
 AWS_SECRET_ACCESS_KEY = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYzEXAMPLEKEY"
 
 # GitHub PAT - matches ghp_ + exactly 36 chars
-GITHUB_TOKEN = "ghp_aBcD1234EfGh5678IjKl9012MnOp3456QrSt"
 
 # Slack - matches xoxb-/xoxp- + numeric segments
 
