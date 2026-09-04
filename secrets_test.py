@@ -1,7 +1,6 @@
-# 🚨 Test file for Verified vs Unverified Secrets
+# 🚨 Intentionally vulnerable file for testing Secret Scanning
+# DO NOT USE THESE KEYS IN PRODUCTION
 
-# REAL GitHub Token - WILL BE VERIFIED (if valid)
-GITHUB_REAL = "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"  # ← REPLACE WITH YOUR REAL TOKEN
+# All secrets have been removed for testing
 
-# FAKE GitHub Token - WILL NOT BE VERIFIED
-GITHUB_FAKE = "ghp_aBcD1234EfGh5678IjKl9012MnOp3456QrSt"
+print("This file no longer contains any hardcoded secrets.")
